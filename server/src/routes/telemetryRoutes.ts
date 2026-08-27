@@ -1,25 +1,31 @@
 // codeauthor chetas karnam
 import { Router } from 'express';
-import { collectTelemetrySnapshot, getTelemetryHistory } from '../services/ingestionService.js';
+import {
+  collectTelemetrySnapshot,
+  getTelemetryHistory
+} from '../services/ingestionService.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 
 const router = Router();
 
-router.get('/telemetry', async (_req, res) => {
-  try {
-    const snapshot = await collectTelemetrySnapshot();
-    res.json({ snapshot, history: getTelemetryHistory() });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to collect telemetry', error: String(error) });
-  }
-});
+router.get(
+    '/telemetry',
+    asyncHandler(async (_req, res) => {
+      const snapshot = await collectTelemetrySnapshot();
 
-router.get('/telemetry/live', async (_req, res) => {
-  try {
-    const snapshot = await collectTelemetrySnapshot();
-    res.json(snapshot);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to collect live telemetry', error: String(error) });
-  }
-});
+      res.json({
+        snapshot,
+        history: getTelemetryHistory()
+      });
+    })
+);
+
+router.get(
+    '/telemetry/live',
+    asyncHandler(async (_req, res) => {
+      const snapshot = await collectTelemetrySnapshot();
+      res.json(snapshot);
+    })
+);
 
 export default router;

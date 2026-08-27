@@ -35,7 +35,9 @@ export class DatasetService {
     return DatasetLoader.loadFile('mission');
   }
 
-  static async getDatasetByKey<K extends DatasetKey>(key: K): Promise<DatasetBundle[K]> {
+  static async getDatasetByKey<K extends DatasetKey>(
+    key: K
+  ): Promise<DatasetBundle[K]> {
     return DatasetLoader.loadFile(key);
   }
 
@@ -43,7 +45,7 @@ export class DatasetService {
     return DatasetLoader.loadAll();
   }
 
-  static reloadData(): void {
-    DatasetLoader.clearCache();
+  static async reloadData(): Promise<DatasetBundle> {
+    return DatasetLoader.reload();
   }
 }

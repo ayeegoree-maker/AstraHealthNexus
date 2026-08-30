@@ -31,14 +31,14 @@ router.get('/dataset/keys', (_req, res) => {
   });
 });
 
-router.post('/dataset/refresh', (_req, res) => {
-  DatasetService.reloadData();
+router.post('/dataset/refresh', asyncHandler(async (_req, res) => {
+  await DatasetService.reloadData();
 
   res.json({
     status: 'success',
-    message: 'Local dataset cache cleared and refreshed'
+    message: 'Local datasets reloaded successfully'
   });
-});
+}));
 
 router.get('/dataset/:datasetKey', asyncHandler(async (req, res) => {
   const key = req.params.datasetKey as string;

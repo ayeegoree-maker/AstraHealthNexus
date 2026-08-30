@@ -3,7 +3,20 @@ import { Router } from 'express';
 import { DatasetService } from '../services/datasetService.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 
+type PublicError = Error & {
+  status?: number;
+  publicMessage?: string;
+};
+
+function createNotFoundError(message: string): PublicError {
+  const error = new Error(message) as PublicError;
+  error.status = 404;
+  error.publicMessage = message;
+  return error;
+}
+
 const router = Router();
+
 const validDatasetKeys = new Set([
   'iss',
   'weather',
@@ -31,28 +44,28 @@ router.get('/dataset/keys', (_req, res) => {
   });
 });
 
-router.post('/dataset/refresh', (_req, res) => {
-  DatasetService.reloadData();
+router.post('/dataset/refresh', asyncHandler(async (_req, res) => {
+  await DatasetService.reloadData();
 
   res.json({
     status: 'success',
-    message: 'Local dataset cache cleared and refreshed'
+    message: 'Local datasets reloaded successfully'
   });
-});
+}));
 
 router.get('/dataset/:datasetKey', asyncHandler(async (req, res) => {
   const key = req.params.datasetKey as string;
 
   if (!validDatasetKeys.has(key)) {
-    return res.status(404).json({
-      status: 'error',
-      message: `Dataset '${key}' is not available`
-    });
+    throw createNotFoundError(
+        `Dataset '${key}' is not available`
+    );
   }
 
-  const payload = key === 'weather'
-      ? await DatasetService.getSpaceWeatherData()
-      : await DatasetService.getDatasetByKey(key as any);
+  const payload =
+      key === 'weather'
+          ? await DatasetService.getSpaceWeatherData()
+          : await DatasetService.getDatasetByKey(key as never);
 
   res.json({
     status: 'success',
@@ -66,10 +79,9 @@ router.get('/dataset/astronauts/:id', asyncHandler(async (req, res) => {
   const astronaut = astronauts.find((crew) => crew.id === id);
 
   if (!astronaut) {
-    return res.status(404).json({
-      status: 'error',
-      message: `Astronaut '${id}' not found in local dataset`
-    });
+    throw createNotFoundError(
+        `Astronaut '${id}' not found in local dataset`
+    );
   }
 
   res.json({

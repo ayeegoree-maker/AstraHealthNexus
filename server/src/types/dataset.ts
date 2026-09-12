@@ -5,6 +5,9 @@ export interface ISSData {
   altitude: number;
   velocity: number;
   timestamp: string;
+  orbitPeriodMinutes?: number;
+  powerGeneration?: number;
+  nextPassOver?: string;
 }
 
 export interface SpaceWeatherData {
@@ -16,6 +19,7 @@ export interface SpaceWeatherData {
   description: string;
   kpIndex: number;
   solarFlux: number;
+  nextDowngradeRisk?: string;
 }
 
 export interface VitalSigns {

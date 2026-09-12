@@ -1,19 +1,799 @@
-/* codeauthor chetas karnam */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #020617;
-  color: #f8fafc;
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
+  min-width: 320px;
   min-height: 100vh;
-  background: radial-gradient(circle at top, #0f172a 0%, #020617 60%, #01040b 100%);
+  background:
+          radial-gradient(circle at 15% 10%, rgba(0, 212, 255, 0.09), transparent 28%),
+          radial-gradient(circle at 85% 15%, rgba(124, 58, 237, 0.10), transparent 30%),
+          radial-gradient(circle at 50% 100%, rgba(0, 150, 255, 0.06), transparent 35%),
+          #05070b;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
 }
 
-* { box-sizing: border-box; }
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: rgba(0, 212, 255, 0.25);
+}
+
+/* =========================================================
+   DASHBOARD PAGE
+   ========================================================= */
+
+.dashboard-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 42px clamp(20px, 4vw, 70px) 70px;
+  overflow: hidden;
+}
+
+.dashboard-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+          linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 45px 45px;
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+  z-index: 0;
+}
+
+.dashboard-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.dashboard-header {
+  max-width: 1450px;
+  margin: 0 auto 42px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -1.8px;
+  background: linear-gradient(110deg, #ffffff, #a5f3fc 55%, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dashboard-header p {
+  margin: 12px 0 0;
+  color: #94a3b8;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+}
+
+/* =========================================================
+   LIVE STATUS
+   ========================================================= */
+
+.stream-status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 15px;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.045);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.stream-status.connected {
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #86efac;
+  box-shadow: 0 0 25px rgba(34,197,94,0.08);
+}
+
+.stream-status.disconnected {
+  border-color: rgba(251, 191, 36, 0.22);
+  color: #fcd34d;
+}
+
+.stream-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 12px rgba(251,191,36,0.8);
+}
+
+.stream-status.connected .stream-status-dot {
+  background: #22c55e;
+  box-shadow: 0 0 13px rgba(34,197,94,0.9);
+  animation: livePulse 1.8s ease-in-out infinite;
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.dashboard-section {
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto 26px;
+}
+
+.section-header {
+  margin-bottom: 13px;
+}
+
+.section-header h2 {
+  margin: 0;
+  color: #f8fafc;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.section-header p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* =========================================================
+   GLASS CARDS
+   ========================================================= */
+
+.dashboard-card,
+.mission-status-card,
+.telemetry-card {
+  border: 1px solid rgba(255,255,255,0.075);
+  background:
+          linear-gradient(
+                  145deg,
+                  rgba(255,255,255,0.075),
+                  rgba(255,255,255,0.025)
+          );
+  box-shadow:
+          0 20px 70px rgba(0,0,0,0.22),
+          inset 0 1px 0 rgba(255,255,255,0.035);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.dashboard-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 25px;
+  transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          box-shadow 180ms ease;
+}
+
+.dashboard-card::before,
+.mission-status-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(103,232,249,0.55),
+          transparent
+  );
+  opacity: 0.65;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(103,232,249,0.16);
+  box-shadow:
+          0 25px 75px rgba(0,0,0,0.28),
+          0 0 40px rgba(0,212,255,0.035);
+}
+
+/* =========================================================
+   MISSION STATUS
+   ========================================================= */
+
+.mission-status-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 30px;
+}
+
+.mission-status-main {
+  margin-bottom: 28px;
+}
+
+.mission-status-label {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.mission-status-value {
+  max-width: 900px;
+  color: #f8fafc;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.mission-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* =========================================================
+   METRIC CARD
+   ========================================================= */
+
+.metric-card {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid rgba(255,255,255,0.055);
+  border-radius: 14px;
+  background: rgba(0,0,0,0.18);
+}
+
+.metric-card-title {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-card-value {
+  margin-top: 8px;
+  color: #e2e8f0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.metric-card-suffix {
+  margin-left: 4px;
+  color: #64748b;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   TWO COLUMNS
+   ========================================================= */
+
+.dashboard-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #e2e8f0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.card-header > span:not(.status-badge) {
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* =========================================================
+   CARD CONTENT
+   ========================================================= */
+
+.card-content {
+  min-height: 145px;
+}
+
+.large-value {
+  margin-bottom: 12px;
+  color: #67e8f9;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.card-content p,
+.card-narrative {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+/* =========================================================
+   TELEMETRY
+   ========================================================= */
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.telemetry-card {
+  padding: 18px;
+  border-radius: 16px;
+}
+
+.telemetry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 13px;
+}
+
+.telemetry-header span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.telemetry-header strong {
+  color: #67e8f9;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+}
+
+.telemetry-bar {
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.07);
+}
+
+.telemetry-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #06b6d4, #6366f1);
+  box-shadow: 0 0 14px rgba(34,211,238,0.4);
+  transition: width 500ms ease;
+}
+
+/* =========================================================
+   HEALTH
+   ========================================================= */
+
+.health-score {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.health-score-number {
+  color: #67e8f9;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 46px;
+  line-height: 1;
+  font-weight: 700;
+  text-shadow: 0 0 30px rgba(34,211,238,0.18);
+}
+
+.health-score-label {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.status-badge {
+  padding: 6px 10px;
+  border: 1px solid rgba(34,197,94,0.18);
+  border-radius: 999px;
+  background: rgba(34,197,94,0.08);
+  color: #86efac;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-bottom: 20px;
+}
+
+.card-narrative {
+  padding-top: 17px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* =========================================================
+   CREW
+   ========================================================= */
+
+.crew-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.crew-member {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1px solid rgba(255,255,255,0.055);
+  border-radius: 14px;
+  background: rgba(0,0,0,0.16);
+}
+
+.crew-avatar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(103,232,249,0.18);
+  border-radius: 50%;
+  background: linear-gradient(
+          135deg,
+          rgba(6,182,212,0.14),
+          rgba(99,102,241,0.16)
+  );
+  color: #67e8f9;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.crew-name {
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   OBJECTIVES
+   ========================================================= */
+
+.objectives-list {
+  display: grid;
+  gap: 8px;
+}
+
+.objective-item {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  min-height: 55px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.045);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.13);
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.objective-number {
+  color: #22d3ee;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+.alerts-list {
+  display: grid;
+  gap: 8px;
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid rgba(251,191,36,0.09);
+  border-radius: 12px;
+  background: rgba(251,191,36,0.035);
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(251,191,36,0.12);
+  color: #fbbf24;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   NASA
+   ========================================================= */
+
+.nasa-highlight {
+  background:
+          radial-gradient(
+                  circle at 100% 0%,
+                  rgba(99,102,241,0.12),
+                  transparent 35%
+          ),
+          linear-gradient(
+                  145deg,
+                  rgba(255,255,255,0.075),
+                  rgba(255,255,255,0.025)
+          );
+}
+
+.nasa-highlight-content {
+  display: flex;
+  min-height: 100px;
+  align-items: center;
+}
+
+.nasa-highlight-title {
+  margin-bottom: 10px;
+  color: #f1f5f9;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.nasa-highlight-content p {
+  margin: 0;
+  max-width: 900px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   LAST UPDATED
+   ========================================================= */
+
+.dashboard-last-updated {
+  max-width: 1450px;
+  margin: 35px auto 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  color: #475569;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+}
+
+.live-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #64748b;
+}
+
+.live-indicator.active {
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34,197,94,0.8);
+}
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.dashboard-loading,
+.dashboard-error {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.dashboard-loading h2,
+.dashboard-error h2 {
+  margin: 20px 0 7px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 25px;
+}
+
+.dashboard-loading p,
+.dashboard-error p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.dashboard-loading-spinner {
+  width: 45px;
+  height: 45px;
+  border: 2px solid rgba(255,255,255,0.08);
+  border-top-color: #22d3ee;
+  border-right-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 30px rgba(34,211,238,0.12);
+}
+
+.dashboard-error button {
+  margin-top: 22px;
+  padding: 11px 18px;
+  border: 1px solid rgba(34,211,238,0.2);
+  border-radius: 10px;
+  background: rgba(34,211,238,0.08);
+  color: #67e8f9;
+  transition: 150ms ease;
+}
+
+.dashboard-error button:hover {
+  background: rgba(34,211,238,0.15);
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(0.78);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .mission-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .telemetry-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .crew-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-page {
+    padding: 25px 15px 50px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+
+  .dashboard-two-column {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-status-card {
+    padding: 21px;
+  }
+
+  .mission-status-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .telemetry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card {
+    padding: 19px;
+  }
+
+  .nasa-highlight-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 450px) {
+  .mission-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vitals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-score-number {
+    font-size: 38px;
+  }
+}

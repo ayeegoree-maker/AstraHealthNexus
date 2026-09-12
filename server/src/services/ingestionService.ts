@@ -1,6 +1,8 @@
-// codeauthor chetas karnam
-import { logger } from '../middleware/logger.js';
-import { buildDashboardSnapshot } from './dashboardService.js';
+﻿import { logger } from '../middleware/logger.js';
+import {
+  buildDashboardSnapshot,
+  regenerateSnapshot
+} from './dashboardService.js';
 
 export interface TelemetryRecord {
   timestamp: string;
@@ -34,8 +36,10 @@ export interface TelemetryRecord {
 
 const history: TelemetryRecord[] = [];
 
+let ingestionTimer: NodeJS.Timeout | null = null;
+
 export async function collectTelemetrySnapshot(): Promise<TelemetryRecord> {
-  const snapshot = await buildDashboardSnapshot(true);
+  const snapshot = await buildDashboardSnapshot();
 
   const telemetrySnapshot: TelemetryRecord = {
     timestamp: new Date().toISOString(),
@@ -49,21 +53,43 @@ export async function collectTelemetrySnapshot(): Promise<TelemetryRecord> {
   };
 
   history.push(telemetrySnapshot);
+
   if (history.length > 20) {
     history.shift();
   }
 
-  logger.info('Collected telemetry snapshot from public aerospace feeds');
+  logger.info(
+    'Collected telemetry snapshot from local dashboard dataset'
+  );
+
   return telemetrySnapshot;
 }
 
 export function getTelemetryHistory(): TelemetryRecord[] {
-  return history;
+  return [...history];
 }
 
-export function startTelemetryIngestion() {
-  const intervalMs = Number(process.env.INGESTION_INTERVAL_MS ?? 1000);
-  setInterval(() => {
-    collectTelemetrySnapshot().catch((error) => logger.error(`Telemetry ingestion failed: ${String(error)}`));
+export function startTelemetryIngestion(): void {
+  if (ingestionTimer) {
+    return;
+  }
+
+  const configuredInterval = Number(
+    process.env.INGESTION_INTERVAL_MS ?? 1000
+  );
+
+  const intervalMs =
+    Number.isFinite(configuredInterval) && configuredInterval > 0
+      ? configuredInterval
+      : 1000;
+
+  ingestionTimer = setInterval(() => {
+    regenerateSnapshot()
+      .then(() => collectTelemetrySnapshot())
+      .catch((error) => {
+        logger.error(
+          `Telemetry ingestion failed: ${String(error)}`
+        );
+      });
   }, intervalMs);
 }
